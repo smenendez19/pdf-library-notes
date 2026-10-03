@@ -1,4 +1,4 @@
-# PDF Notes prototype
+# PDF Library Notes
 
 ## Descripcion
 
@@ -6,7 +6,7 @@ Prototipo de App Web de un catalogo de libros en formato PDF que te permite leer
 
 ## Link web
 
-Lector PDF: <http://localhost:5173/reader>
+Lector PDF: <http://localhost:5173/catalog>
 
 ## Caracteristicas
 
