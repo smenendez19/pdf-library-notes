@@ -1,37 +1,53 @@
 # PDF Library Notes
 
-## Descripcion
+App web de catálogo de libros en PDF: explora libros por portada, léelos en el navegador, toma notas tipo post-it por página y guarda tu progreso de lectura. Permite clasificar por etiquetas/autores/editoriales y cargar nuevos PDFs.
 
-Prototipo de App Web de un catalogo de libros en formato PDF que te permite leerlos, realizar notas y guardar progresos, clasificar libros y cargar nuevos libros utilizando un sistema de archivos.
+## Capturas
 
-## Link web
+> Placeholders: añade las imágenes reales en `docs/screenshots/`.
 
-Lector PDF: <http://localhost:5173/catalog>
+![Catálogo de libros](docs/screenshots/catalog.png)
+![Lector PDF con notas](docs/screenshots/reader.png)
+![Agregar nuevo PDF](docs/screenshots/upload.png)
 
-## Caracteristicas
+## Tecnologías
 
-- Catalogo de libros por portada con filtros por etiquetas, autores, editoriales.
-- Lector de PDF con PDF.js directo.
-- Notas tipo postit por página, mantenidas solo en memoria.
-- Controles de página, zoom, búsqueda e impresión, además de modo oscuro.
-- Sincronizacion por perfil.
-- Sistema de agregado de nuevos libros PDF.
+- **Frontend:** Vue 3, Vite, TypeScript, `pdfjs-dist`, `vue-router`, `marked`, `dompurify`.
+- **Backend:** Go 1.26 (solo stdlib + `modernc.org/sqlite`, SQLite puro Go sin cgo).
+- **Tooling:** pnpm, Docker Compose.
 
-## Tecnologias
+## Estructura del repo
 
-Frontend:
+```text
+backend/    API en Go + SQLite (catálogo, PDFs, notas y progreso)
+frontend/   Cliente Vue 3 + Vite (catálogo, lector PDF.js, notas)
+```
 
-- Vue 3
-- Vite
-- TypeScript
+## Documentación
 
-## Arquitectura
+- Backend (endpoints y configuración): [backend/README.md](backend/README.md)
+- Frontend (instalación y uso): [frontend/README.md](frontend/README.md)
 
-## Ejecucion manual
+## Arranque rápido
 
-1. Instalar pnpm (Alternativa mas eficiente que npm ya que utiliza symlinks para las dependencias y es mas seguro)
-    npx get-pnpm
-2. Si estas en WSL (Windows 11) configurar el store-dir:
-    pnpm config set store-dir /mnt/e/.pnpm-store --global
-3. Ejecutar la instalacion
-    pnpm install
+### Manual
+
+```bash
+# Backend (http://localhost:8080)
+cd backend
+go run ./cmd/server
+
+# Frontend (http://localhost:5173)
+cd frontend
+pnpm install
+VITE_API_URL=http://localhost:8080/api/v1 pnpm dev
+```
+
+### Docker Compose
+
+```bash
+docker compose up --build
+```
+
+- Backend: <http://localhost:8080>
+- Frontend: <http://localhost:8081>

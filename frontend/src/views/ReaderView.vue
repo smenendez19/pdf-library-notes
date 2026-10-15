@@ -8,6 +8,7 @@ import PdfReader from '../components/PdfReader.vue'
 import { useTheme } from '../composables/useTheme'
 import { useReaderPersistence } from '../composables/useReaderPersistence'
 import { useStickyNotes, type StickyNote } from '../composables/useStickyNotes'
+import { resolveDocumentUrl } from '../services/catalogService'
 
 const DEFAULT_DOCUMENT_TITLE = 'Automate the Boring Stuff with Python'
 const DEFAULT_DOCUMENT_SOURCE = '/automatetheboringstuffwithpython.pdf'
@@ -19,9 +20,11 @@ const documentTitle = computed(() => {
 })
 const documentSource = computed(() => {
   const doc = route.query.doc
-  return typeof doc === 'string' && doc.trim() !== '' && doc.startsWith('/')
-    ? doc
-    : DEFAULT_DOCUMENT_SOURCE
+  const isUsable =
+    typeof doc === 'string' &&
+    doc.trim() !== '' &&
+    (doc.startsWith('/') || doc.startsWith('http://') || doc.startsWith('https://'))
+  return isUsable ? resolveDocumentUrl(doc as string) : DEFAULT_DOCUMENT_SOURCE
 })
 const currentPage = ref(1)
 const { readNotes, writeNotes } = useReaderPersistence()
@@ -80,7 +83,23 @@ function onResize(payload: { id: number; width: number; height: number }): void 
         <div>
           <p class="reader-kicker">PDF reader</p>
           <h1 id="document-title">{{ documentTitle }}</h1>
-          <p class="reader-meta">PDF document <span aria-hidden="true">·</span> Local file</p>
+          <p class="reader-meta">
+            PDF document <span aria-hidden="true">·</span> Local file
+            <span class="reader-meta-info">
+              <button
+                type="button"
+                class="reader-meta-info-btn"
+                aria-label="Ver ubicación del archivo"
+                aria-describedby="doc-location-tooltip"
+              >
+                <span aria-hidden="true">⋯</span>
+              </button>
+              <span id="doc-location-tooltip" role="tooltip" class="reader-meta-info-tooltip">
+                <span class="reader-meta-info-tooltip-label">Ubicación:</span>
+                {{ documentSource }}
+              </span>
+            </span>
+          </p>
         </div>
         <div class="reader-actions">
           <RouterLink class="back-link" to="/catalog">← Volver al catálogo</RouterLink>
@@ -179,6 +198,79 @@ h1 {
   margin: 0.5rem 0 0;
   color: var(--reader-muted);
   font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.reader-meta-info {
+  position: relative;
+  display: inline-flex;
+}
+
+.reader-meta-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: 1px solid var(--reader-border);
+  border-radius: 999px;
+  background: var(--reader-surface);
+  color: var(--reader-muted);
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reader-meta-info-btn:hover,
+.reader-meta-info-btn:focus-visible {
+  color: var(--reader-heading);
+  border-color: var(--reader-muted);
+}
+
+.reader-meta-info-btn:focus-visible {
+  outline: 2px solid rgb(59 130 246 / 50%);
+  outline-offset: 2px;
+}
+
+.reader-meta-info-tooltip {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  max-width: 320px;
+  width: max-content;
+  min-width: 8rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--reader-border);
+  border-radius: 0.5rem;
+  background: var(--reader-surface);
+  color: var(--reader-text);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  word-break: break-all;
+  box-shadow: 0 10px 30px rgb(15 23 42 / 18%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.reader-meta-info-tooltip-label {
+  display: block;
+  color: var(--reader-muted);
+  font-weight: 700;
+}
+
+.reader-meta-info:hover .reader-meta-info-tooltip,
+.reader-meta-info:focus-within .reader-meta-info-tooltip,
+.reader-meta-info-btn:focus-visible + .reader-meta-info-tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .reader-actions {

@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Env (frontend + backend)
+.env
+.env.local
+.env.*.local
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,3 +31,18 @@ dist-ssr
 
 # Opencode
 .opencode/
+
+# Docker / datos locales
+pdfs/
+
+# Frontend
+
+# Backend
+backend/data/
+backend/*.db
+backend/*.db-wal
+backend/*.db-shm
+backend/*.part
+backend/server
+backend/pdfnotes-backend
+backend/tmp/

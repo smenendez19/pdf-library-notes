@@ -4,7 +4,7 @@ import CatalogCard from './CatalogCard.vue';
 
 defineProps<{ documents: CatalogDocument[] }>();
 
-defineEmits<{ open: [id: string] }>();
+defineEmits<{ open: [id: string]; delete: [id: string] }>();
 </script>
 
 <template>
@@ -12,7 +12,7 @@ defineEmits<{ open: [id: string] }>();
     v-if="documents.length === 0"
     class="empty"
   >
-    No se encontraron documentos.
+    No hay archivos subidos
   </p>
   <div
     v-else
@@ -23,6 +23,7 @@ defineEmits<{ open: [id: string] }>();
       :key="doc.id"
       :document="doc"
       @open="$emit('open', $event)"
+      @delete="$emit('delete', $event)"
     />
   </div>
 </template>

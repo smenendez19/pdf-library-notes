@@ -4,7 +4,7 @@ import type { CatalogDocument } from '../../types/catalog';
 
 const props = defineProps<{ document: CatalogDocument }>();
 
-const emit = defineEmits<{ open: [id: string] }>();
+const emit = defineEmits<{ open: [id: string]; delete: [id: string] }>();
 
 const initial = computed(() => props.document.title.charAt(0).toUpperCase() || '?');
 
@@ -12,10 +12,18 @@ function handleOpen(): void {
   emit('open', props.document.id);
 }
 
+function handleDelete(): void {
+  emit('delete', props.document.id);
+}
+
 function handleKeydown(event: KeyboardEvent): void {
   if (event.key === 'Enter') {
     handleOpen();
   }
+}
+
+function handleDeleteKeydown(event: KeyboardEvent): void {
+  event.stopPropagation();
 }
 </script>
 
@@ -29,6 +37,25 @@ function handleKeydown(event: KeyboardEvent): void {
     @keydown="handleKeydown"
   >
     <div class="cover">
+      <button
+        type="button"
+        class="card-delete"
+        :aria-label="`Eliminar ${document.title}`"
+        title="Eliminar"
+        @click.stop="handleDelete"
+        @keydown.stop="handleDeleteKeydown"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
       <img
         v-if="document.image"
         :src="document.image"
@@ -63,6 +90,7 @@ function handleKeydown(event: KeyboardEvent): void {
 
 <style scoped>
 .card {
+  position: relative;
   border: 1px solid var(--reader-border, #dbe4ee);
   border-radius: 0.75rem;
   overflow: hidden;
@@ -157,5 +185,38 @@ function handleKeydown(event: KeyboardEvent): void {
   margin: 0.25rem 0.75rem 0.75rem;
   font-size: 0.85rem;
   color: var(--reader-muted, #64748b);
+}
+
+.card-delete {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--reader-border, #dbe4ee);
+  border-radius: 50%;
+  background: var(--reader-surface, #ffffff);
+  color: var(--reader-muted, #64748b);
+  cursor: pointer;
+}
+
+.card-delete svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.card-delete:hover,
+.card-delete:focus {
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.card-delete:focus-visible {
+  outline: 3px solid #b91c1c;
+  outline-offset: 2px;
 }
 </style>
